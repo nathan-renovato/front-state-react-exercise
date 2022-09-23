@@ -1,83 +1,37 @@
-import './style.css';
-import Logo from '../../assets/logo.svg';
-import cards from '../../cards';
-import CardBack from '../../assets/card-back.png';
 import { useState } from 'react';
+import cards from '../../cards';
+import Card from '../../components/Card';
+import Sidebar from '../../components/Sidebar';
+import Congrats from '../../assets/congrats.png';
+import './style.css';
 
 function Main() {
 
-  const [gameCards, setGameCards] = useState(cards);
-  const [currentCard, setCurrentCard] = useState(null);
-  const [cardFigures, setCardFigures] = useState(null);
-
-  function handleRenderGame() {
-    saveCardImages();
-
-    const imgCards = [...cardFigures];
-
-    return imgCards.map((imgCard) => (
-      <img
-        key={imgCard.id}
-        onClick={() => handleCompareCards(imgCard.id)}
-        src={CardBack}
-        alt={imgCard.slug}
-      />
-    ));
-  }
-
-  function saveCardImages() {
-    const localCards = [...gameCards];
-    const imagesCards = [];
-
-    localCards.map((card) => (
-      !card.turned &&
-      imagesCards.push({
-        id: card.id,
-        src: card.image,
-        alt: card.slug,
-        slug: card.slug
-      })
-    ));
-
-    setCardFigures(imagesCards);
-  }
-
-  function handleCompareCards(id) {
-    const localCards = [...gameCards];
-    let firstCard = currentCard;
-
-    const selectedCard = localCards.find(card => card.id === id);
-
-    if (!firstCard) {
-      setCurrentCard(selectedCard);
-      return;
-    }
-
-    if (selectedCard.slug === currentCard.slug) {
-      const drawMatchingCards = localCards.map(card => (
-        card.id === selectedCard.id || card.id === currentCard.id ? { ...card, turned: true } : { ...card }
-      ));
-      setGameCards(drawMatchingCards);
-    }
-
-    firstCard = 0;
-    setCurrentCard(null);
-  }
-
-  /*function handleShowCard(id) {
-    const localCards = [...gameCards];
-
-
-  }*/
+  const [stateCards, setStateCards] = useState([...cards]);
 
   return (
     <div className='container'>
-      <div className='side-bar'>
-        <img src={Logo} alt='Logo do jogo' />
-        <button>RESET</button>
-      </div>
-      <div className='main'>
-        {handleRenderGame()}
+      <Sidebar
+        cards={cards}
+        setStateCards={setStateCards} />
+
+      <div className='container-main'>
+        <div
+          className='container-cards'
+          style={{ 'justifyContent': `${stateCards.length ? 'flex-start' : 'center'}` }}
+        >
+          {stateCards.length ? stateCards.map((card) => (
+            <Card
+              key={card.id}
+              card={card}
+              stateCards={stateCards}
+              setStateCards={setStateCards}
+            />
+          ))
+            :
+            <img src={Congrats} alt='imagem de parabéns' />
+          }
+        </div>
       </div>
     </div>
   );
